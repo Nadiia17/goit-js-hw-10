@@ -78,7 +78,11 @@ fetchBreeds()
   });
 
 elements.select.addEventListener('change', event => {
-  if (!event.target.value) return;
+  if (!event.target.value) {
+    elements.catInfo.innerHTML = '';
+    return;
+  }
+
   elements.catInfo.innerHTML = '';
   toggleElementVisibility(elements.catInfo, false);
   toggleElementVisibility(elements.loader, true);
