@@ -16,27 +16,14 @@ let select = new SlimSelect({
   select: '.breed-select',
 });
 
-function showLoader() {
-  elements.loader.classList.remove('hidden');
-}
-
-function hideLoader() {
-  elements.loader.classList.add('hidden');
+function toggleElementVisibility(element, isVisible) {
+  element.classList.toggle('hidden', !isVisible);
 }
 
 function showError() {
   Notiflix.Notify.failure(
     'Oops! Something went wrong! Try reloading the page!'
   );
-}
-
-function hideError() {
-  elements.error.classList.add('hidden');
-}
-
-function hideCatInfo() {
-  elements.catInfo.classList.add('hidden');
-  elements.catInfo.classList.remove('visible');
 }
 
 // function populateSelectWithOptions(breeds) {
@@ -62,8 +49,6 @@ function populateSelectWithOptions(breeds) {
 function createCatMarkup(imageData) {
   const { url, breeds } = imageData;
   const breed = breeds[0];
-  elements.catInfo.classList.remove('hidden');
-  elements.catInfo.classList.add('visible');
 
   elements.catInfo.innerHTML = `
         <div class="cat-card">
@@ -75,9 +60,10 @@ function createCatMarkup(imageData) {
             </div>
         </div>
     `;
+  toggleElementVisibility(elements.catInfo, true);
 }
 
-showLoader();
+toggleElementVisibility(elements.loader, true);
 
 fetchBreeds()
   .then(breeds => {
@@ -88,13 +74,14 @@ fetchBreeds()
     showError();
   })
   .finally(() => {
-    hideLoader();
+    toggleElementVisibility(elements.loader, false);
   });
 
 elements.select.addEventListener('change', event => {
   if (!event.target.value) return;
-  hideCatInfo();
-  showLoader();
+  elements.catInfo.innerHTML = '';
+  toggleElementVisibility(elements.catInfo, false);
+  toggleElementVisibility(elements.loader, true);
 
   fetchCatByBreed(event.target.value)
     .then(imageData => {
@@ -105,7 +92,7 @@ elements.select.addEventListener('change', event => {
       showError();
     })
     .finally(() => {
-      hideLoader();
+      toggleElementVisibility(elements.loader, false);
     });
 });
 
